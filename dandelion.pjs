@@ -1,4 +1,4 @@
-/******************************************************************************* 
+/*******************************************************************************
  * 
  * Copyright 2011 Zack Grossbart 
  *
@@ -22,6 +22,14 @@
 var seedBulbColor = '#d0aa7b';
 var stemColor = '#567e37';
 var wispColor = '#fff3c9';
+var seedStemColor = stemColor;
+
+var maxEdgeSeeds = 1000;
+var maxCenterSeeds = 36;
+//maxEdgeSeeds = 1;
+//maxCenterSeeds = 0;
+seedStemColor = 'black';
+
 
 /**
  * This script uses a lot of random numbers to make everything
@@ -35,66 +43,75 @@ function random(/*int*/ from, /*int*/ to) {
     return Math.floor(Math.random() * (to - from + 1) + from);
 }
 
+
+var seedStemLow = 10;
+var seedStemHigh = 50;
+seedStemLow = 20;
+seedStemHigh = 30;
+
 /**
  * This function acts like an object in paperscript.  It
  * represents each seed on the dandelion and handles drawing and
  * moving the seed.
  */
 function Seed() {
-    /**
-     * This function creates the seed and draws it at the specified
-     * point.
-     * 
-     * @param p the point to draw the seed at 
-     * @param shortStem true if this seed should have a short stem 
-     *                  and false otherwise
-     */
-    this.create = function (/*Point*/ p, /*boolean*/ shortStem) {
+    var seedStemColor = stemColor;
+    var flutterLow = 4;
+    var flutterHigh = 10;
+
+    seedStemColor = 'black';
+
+    //
+    // create a seed at the specified point. the point is where the center
+    // of the oval at the bottom of the seed is positioned.
+    //
+    // @param p the point for the center of the oval where the seed is attached
+    // @param angle the angle to rotate the seed around the seed's oval
+    // @param shortStem true if the seed should have a short stem
+    //
+    this.create = function (p, angle, stemHeight) {
+        /*
         var height = 2;
 
+        // short stem is kind of a hack used for seeds in middle of the
+        // bulb
         if (!shortStem) {
-            /*
-             * If this seed doesn't have a short stem then it has a
-             * stem which is a random height between 10 and 50.
-             */
-            height = random(10, 50);
+            height = random(seedStemLow, seedStemHigh);
         }
-        
-        //p.y += height;
-        
-        /*
-         * Our group gives us a single container to draw, rotate, and
-         * move all the parts of our seed at the same time.
-         */
+        // */
+
+        // group all the seed parts together so it can be manipulated as
+        // a single unit
         var group = new Group();
-        
-        /*
-         * Now we're ready to draw our seed.  Each seed starts with a
-         * small oval at the bottom of the see.
-         */
-        var size = new Size(4, 10);
-        var rectangle = new Rectangle(p, size);
-        var bottom = new Path.Oval(rectangle);
-        bottom.fillColor = seedBulbColor;
-        bottom.opacity = 0.5;
+
+        // now draw the seed. start with a small ovall at the bottom
+        // where it attaches to the bulb.
+        var bottom = new Path.Ellipse({
+            center: p,
+            radius: [2, 5],
+            fillColor: seedBulbColor,
+            opacity: 0.5,
+        });
         group.addChild(bottom);
-        
+
+        // TODO move stem length logic out of seed creation. pass stem
+        // length as parameter.
+        /*
         if (shortStem) {
             p.y -= height;
             p.x -= 5;
         }
-        
-        /*
-         * The stem of the seed is a gentle arc which pulls to one direction
-         * or the other randomly.
-         */
+        // */
+
+        // The stem of the seed is a gentle arc which pulls randomly to
+        // one direction or the other.
         var stem = new Path();
-        stem.strokeColor = stemColor;
+        stem.strokeColor = seedStemColor;
         stem.strokeWidth = 1;
         stem.add(new Point(p.x + 2, p.y));
-    
-        var throughPoint = new Point(p.x + 4, p.y - height / 2);
-        var toPoint = new Point(p.x + 3, p.y - height);
+
+        var throughPoint = new Point(p.x + 4, p.y - stemHeight / 2);
+        var toPoint = new Point(p.x + 3, p.y - stemHeight);
         stem.arcTo(throughPoint, toPoint);
         group.addChild(stem);
         
@@ -113,42 +130,38 @@ function Seed() {
             
             var p1 = new Point(p.x, p.y);
             path.add(new Point(p1.x + 2, p1.y + 2));
-            
-            /*
-             * Each flutter extends a random amount up in the air
-             */
+
+            // Each flutter extends a random amount up in the air
             var y = random(1, 5);
             
-            /*
-             * We draw every other stem on the right or the left so they're
-             * spaced out in the seed.
-             */
-            if (i % 2 == 0) {
-                throughPoint = new Point(p1.x + random(1, 3), p1.y - y);
-                toPoint = new Point(p1.x + random(5, 35), p1.y - 20 - y);
-            } else {
-                throughPoint = new Point(p1.x - random(1, 3), p1.y - y);
-                toPoint = new Point(p1.x - random(5, 35), p1.y - 20 - y);
-            }
-            
+            // Alternate flutters right and left to simulate dandelion
+            // symmetry.
+            var rand = random(1, 3);
+            throughPoint = new Point(p1.x + (i & 1 ? -rand : rand), p1.y - y);
+            rand = random(5, 35);
+            toPoint = new Point(p1.x + (i & 1 ? -rand : rand), p1.y - 20 - y);
+
             path.arcTo(throughPoint, toPoint);
             group.addChild(path);
-            
-            /*
-             * Now we put the circle at the tip of the flutter.
-             */
+
+            // put a circle at the top of the flutter
             circle = new Path.Circle(toPoint, 2);
             circle.fillColor = wispColor;
             group.addChild(circle);
         }
         
-        /*
-         * This group contains all of the pieces of our seed so we can work with
-         * them as one unit.
-         */
+        // This group contains all of the pieces of our seed so we can 
+        // work with them as a unit. rotate the group around the bottom
+        // of the seed.
         this.group = group;
-        this.position = new Point(this.group.position.x, this.group.position.y + 15);
-        
+        this.group.rotate(angle, bottom.position);
+        //this.group.rotate(angle, this.group.position + [0, 15]);
+
+        // keep track of where this seed is and what angle it's been rotated to
+        //this.position = new Point(this.group.position.x, this.group.position.y + 15);
+        this.angle = angle;
+
+        // set where the seed will get blown to
         this.dest = new  Point(1800, random(-300, 1100));
         
     }
@@ -160,7 +173,8 @@ function Seed() {
      * @param angle the amount of rotation for this seed
      */
     this.rotate = function(/*int*/ angle) {
-        this.group.rotate(angle, this.position);
+        this.group.rotate(angle);
+        this.angle += angle;
     }
     
     /**
@@ -170,18 +184,19 @@ function Seed() {
      * they are floating. 
      */
     this.rotateMove = function(/*int*/ angle) {
-        if (this.group.position.x < 850 && this.group.position.y < 650) {
-            var vector = this.dest - this.group.position;
-            this.group.position += vector / 150;
-            
-            this.angle += angle;
-            this.group.rotate(angle);
-        } else {
-            /*
-             * Then it is off the screen
-             */
-            this.isOffScreen = true
-        } 
+        // do accurate off screen check.
+        if (this.group.bounds.topLeft.x > view.bounds.width ||
+            this.group.bounds.bottomLeft.y < 0 ||
+            this.group.bounds.topLeft.y > view.bounds.height) {
+            this.isOffScreen = true;
+            return;
+        }
+
+        // it's on screen so move it and rotate it so it looks like it's
+        // blowing in the breeze
+        var vector = this.dest - this.group.position;
+        this.group.position += vector / 150;
+        this.rotate(angle);
     }
     
     /**
@@ -194,24 +209,29 @@ function Seed() {
     }
 }
 
-var seeds = [];
+//var seeds = [];
 var seedCount = 0;
 var started = false;
+
+var seeds = {attached: [], floating: [], offscreen: []};
 
 /**
  * This function initializes our script.
  */
 function init() {
     
+    // Save the paperscope object so it can be used later for
+    // the in-place code editing
+    // TODO BAM isn't this just paper.PaperScope? and what if there
+    // are more than one?
+    codeMgr.scope = paper;
     /*
-       We're saving our paperscope object so we can use it
-       later for the in place code editing.
-     */
-    PaperScope.each(function(/*PaperScope*/ scope) {
+    PaperScope.each(function(scope) {
         if (scope.project) {
             codeMgr.scope = scope;
         }
     });
+    // */
     
     $('#edit').click(function(evt) {
         started = false;
@@ -239,53 +259,65 @@ function init() {
     bulb.fillColor = stemColor;
     
     var angle = 360 / bulb.length;
+    var normal = bulb.getNormalAt(0);
+    //console.log(normal, normal.angle);
     
     /*
-     * The first set of seeds go around the circle of the bulb.
+     * The first set of seeds go around the perimeter of the bulb.
      * They rotate based on their location in the circle so they
-     * always point out from the flower.
+     * always point out from the bulb.
      */
-    for (var i = 0; i < bulb.length; i++) {
+    var nSeeds = Math.min(bulb.length, maxEdgeSeeds);
+
+    for (var i = 0; i < nSeeds; i++) {
         var seed = new Seed();
-        seed.create(bulb.getPointAt(i));
-        seed.rotate(i * angle);
-        seeds.push(seed);
+        var height = random(seedStemLow, seedStemHigh);
+        //seed.create(bulb.getPointAt(i), i * angle);
+        seed.create(bulb.getPointAt(i), normal.angle/2 + (i * angle), height);
+        seeds.attached.push(seed);
     }
-    
+
     /*
      * Then we add another set of seeds to the middle of the flower
      * so it covers the green in the middle and makes the dandelion
      * look extra fluffy.
      */
-    for (var i = 0; i < 18; i++) {
+    for (var i = 0; i < maxCenterSeeds; i++) {
         var seed = new Seed();
         var point = new Point(toPoint.x + random(-3, 3),
                               toPoint.y + random(-3, 3));
-        seed.create(new Point(point), true);
-        seed.rotate(random(0, 360));
-        seeds.push(seed);
+        //seed.create(new Point(point), random(0, 360), 2);
+        seed.create(toPoint, random(0, 360), 2);
+        seeds.attached.push(seed);
     }
     
     /*
-     * We start the seeds blowing after three seconds.
+     * We start the seeds blowing after a delay.
      */
     setTimeout(start, 1000);
 }
 
 /**
- * This function starts the animation.  We use another timer so 
- * we can let the seeds drift off one second apart instead of 
- * all of them falling off at once. 
+ * This function starts the animation.  We use an interval timer to
+ * launch each seed.
+ * TODO BAM: could more randomly choose when to launch each seed
  */
 function start() {
     started = true;
     
     var id = setInterval(function() {
-        seedCount++;
-        if (seedCount === seeds.length) {
-            clearInterval(id);
+        // don't launch seeds when onFrame isn't running
+        if (!started || !document.hasFocus()) {
+            return;
         }
-    }, 1000);
+        // launch a seed if any remain attached
+        if (seeds.attached.length) {
+            seeds.floating.push(seeds.attached.shift());
+            return;
+        }
+        // no seeds remain attached
+        clearInterval(id);
+    }, 500);
 }
 
 /**
@@ -300,21 +332,22 @@ function onMouseUp(event) {
  * This function is called with each frame of the animation.
  */
 function onFrame(event) {
-    if (started && seedCount > 0) {
-        var stillRunning = false;
-        
-        /*
-         * We only animate the seeds below the current seed count
-         */
-        for (var i = 0; i < seedCount; i++) {
-            if (!seeds[i].isOffscreen()) {
-                stillRunning = true;
-                seeds[i].rotateMove(random(2, 4));
+    if (started && seeds.floating.length) {
+        var i = 0;
+
+        while (i < seeds.floating.length) {
+            // if the seed is offscreen remove it from the floating array
+            // and add it to the offscreen seeds. don't increment the index
+            // because the length is now one shorter than it used to be and
+            // the index refers to the item past the one just removed.
+            if (seeds.floating[i].isOffScreen) {
+                seeds.offscreen.push(seeds.floating.splice(i, 1));
+                continue;
             }
-        }
-        
-        if (!stillRunning) {
-            started = false;
+            // this seed stays in the floating seeds array so rotate it then
+            // increment the index to check on the next seed.
+            seeds.floating[i].rotateMove(2, 4);
+            i += 1;
         }
     }
 }

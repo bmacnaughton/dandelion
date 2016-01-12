@@ -26,17 +26,42 @@ codeMgr = {
      * Run the script contents of the editor
      */
     runScript: function() {
+        /* code for an ancient version of paper
         try {
             // Update script to edited version
             var code = codeMgr.editor.getValue();
             var canvas = codeMgr.scope.view.canvas;
             codeMgr.scope.clear();
             codeMgr.scope.setup(canvas);
-            codeMgr.scope.evaluate(code);
+            //codeMgr.scope.evaluate(code);
+            codeMgr.scope.execute(code);
             
             codeMgr.hideError();
             $('#editContainer').hide();
             $('#container').show();
+        } catch (e) {
+            codeMgr.showError(e);
+        }
+        // */
+        try {
+            var code = codeMgr.editor.getValue();
+            var canvas = codeMgr.scope.view.element;
+            var scope;
+            var url = "dandelion.pjs";
+
+            // remove the existing scope and create a new one
+            codeMgr.scope.remove();
+            codeMgr.scope = scope = new paper.PaperScope();
+            //scope.setup($("#canvas")[0]);
+            scope.setup(canvas);
+
+            // execute the code
+            scope.execute(code, url, {source: code});
+            
+            codeMgr.hideError();
+            $('#editContainer').hide();
+            $('#container').show();
+            
         } catch (e) {
             codeMgr.showError(e);
         }
