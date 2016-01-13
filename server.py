@@ -1,3 +1,7 @@
+#
+# if you want to run this you need to download bottle.py from bottlepy.org
+#
+
 from bottle import route, run, template, static_file
 
 @route('/')
@@ -12,4 +16,4 @@ def getfile(filename):
 def codemirror(filename):
     return static_file(filename, root='./codemirror')
 
-run (host = 'localhost', port = 8899)
+run (host = '0.0.0.0', port = 8899)

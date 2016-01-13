@@ -48,11 +48,11 @@ codeMgr = {
             var canvas = codeMgr.scope.view.element;
             var scope;
             var url = "dandelion.pjs";
+            url = "";
 
             // remove the existing scope and create a new one
             codeMgr.scope.remove();
             codeMgr.scope = scope = new paper.PaperScope();
-            //scope.setup($("#canvas")[0]);
             scope.setup(canvas);
 
             // execute the code
