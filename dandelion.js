@@ -71,7 +71,6 @@ function Seed() {
     var wispMin = 6;
     var wispMax = 10;
 
-
     //
     // create a seed at the specified point. the point is where the center
     // of the oval at the bottom of the seed is positioned.
@@ -210,9 +209,11 @@ function Seed() {
     }
 
     //
-    // This function rotates the seed a certain amount around its
-    // center point.  This is what makes the seeds move across the
-    // screen so they look like they are floating.
+    // This function rotates the seed angle degrees around its center
+    // point.  This is what makes the seeds move across the screen and
+    // approximates a floating motion.
+    //
+    // @param angle degrees to rotate the seed
     //
     this.rotateMove = function(angle) {
         // do accurate off screen check. could use heuristics but
@@ -247,16 +248,16 @@ function Seed() {
     }
 }
 
-
+// control whether to detach seeds and execute onFrame events
 var started = false;
 
+// keep track of where seeds are
 var seeds = {attached: [], floating: [], offscreen: []};
 
 //
 // Initialize paper and the dandelion
 //
 function init() {
-    
     // Save the paperscope object so it can be used later for
     // the in-place code editing
     codeMgr.scope = paper;
@@ -289,11 +290,12 @@ function init() {
     var angle = 360 / bulb.length;
 
     // get the normal for use in calculating the angle to rotate each seed
+    // so the seed sticks out from the bulb.
     var normal = bulb.getNormalAt(0);
     
     //
     // The first set of seeds go around the perimeter of the bulb.
-    // They rotate based on their location in the circle so they
+    // Each seed is rotated based on their location in the circle so they
     // always point out from the bulb.
     //
     var nSeeds = Math.min(bulb.length, maxEdgeSeeds);
@@ -357,8 +359,8 @@ function start() {
 }
 
 //
-// This function helps  with debugging.  Stop and start
-// the animation whenever the user clicks the mouse.
+// This function helps with debugging.  Stop and start
+// the animation whenever the mouse is clicked.
 //
 function onMouseUp(event) {
     started = !started;
