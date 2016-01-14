@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Modifications Copyright 2016 Bruce MacNaughton
+ * Modifications Copyright 2016 Bruce A. MacNaughton
+ *
+ * Significant changes were made to the original software.
  *
  ******************************************************************************/
 

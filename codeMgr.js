@@ -14,6 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Modifications Copyright 2016 Bruce A. MacNaughton
+ *
+ * Significant changes were made to the original software.
+ *
  ******************************************************************************/
  
 /**
@@ -47,8 +51,8 @@ codeMgr = {
             var code = codeMgr.editor.getValue();
             var canvas = codeMgr.scope.view.element;
             var scope;
-            var url = "dandelion.pjs";
-            url = "";
+            var url = "dandelion.js";
+            //url = "";
 
             // remove the existing scope and create a new one
             codeMgr.scope.remove();
@@ -118,7 +122,7 @@ jQuery(document).ready(function() {
         
         $.ajax({
             type: "GET",
-            url: 'dandelion.pjs',
+            url: 'dandelion.js',
             async: false,
             processData: false,
             dataType: 'html',
