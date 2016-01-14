@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+        <title>Dandelion</title> 
+        
+        <script src="jquery.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="paper-full-0.9.25.js" type="text/javascript" charset="utf-8"></script>
+        <script src="codeMgr.js" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/paperscript" canvas="canvas" src="dandelion.js" id="script"></script>
+        
+        <link rel="stylesheet" href="codemirror/codemirror.css">
+        <script src="codemirror/codemirror.js"></script>
+        <script src="codemirror/javascript.js"></script>
+        <link rel="stylesheet" href="codemirror/default.css">
+        <link rel="stylesheet" href="codemirror/docs.css">
+        
+        <link rel="stylesheet" href="dandelion.css" type="text/css" media="screen">
+        
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-26336682-1']);
+            _gaq.push(['_trackPageview']);
+            
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+        
+    </head> 
+    <body>
+        <a href="http://github.com/bmacnaughton/dandelion" id="forkme"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+        <div id="container">
+            <div id="expl">
+                <h2>Dandelion</h2>
+                
+                <p>
+                    This dandelion is a <a href="http://en.wikipedia.org/wiki/Vector_drawing">vectorized</a> animation created with <a href="http://paperjs.org/">Paper.js</a>.  
+                </p>
+                
+                <p>
+                    Find out how it works: <a href="http://coding.smashingmagazine.com/2011/11/21/create-web-animations-with-paperjs/">How To Create Web Animations With Paper.js</a>.
+                </p>
+                
+                <p>
+                    <button id="edit">Edit</button>
+                    <button id="reload">Restart</button>
+                </p>
+            </div>
+            
+            <canvas id="canvas" width=800 height=600></canvas>
+        </div>
+        
+        <div id="editContainer">
+            <h2>Dandelion <span class="weak">Make changes to the dandelion code and press the run button</span></h2>
+            <div id="err"></div>
+            <textarea id="code" name="code"></textarea>
+            <button id="run">Run</button>
+            <div id="poweredBy">Powered by <a href="http://codemirror.net/">CodeMirror</a></div>
+        </div>
+    </body>
+</html>

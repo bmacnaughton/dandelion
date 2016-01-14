@@ -1,0 +1,8 @@
+Bruce MacNaughton, 2016-01-14:
+
+Originally created by Zack Grossbart in 2011, Dandelions illustrated how to use paper.js to create an animation. Much changed with paper.js between 2011 and 2016 and the current version of paper.js no longer supported the API used in 2011. I started this with the intention of making changes so the current version, 0.9.25, of paper would work.
+
+Along the way I got interested in the dandelion animation and made many changes to the code in order to make it behave more like a dandelion, at least as I see dandelions.
+
+
+
