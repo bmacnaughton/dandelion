@@ -78,7 +78,7 @@ function Seed() {
     //
     // @param p the point for the center of the oval where the seed is attached
     // @param angle the angle to rotate the seed around the seed's oval
-    // @param shortStem true if the seed should have a short stem
+    // @param stemHeight - how long to make the stem
     //
     this.create = function (p, angle, stemHeight) {
 
@@ -113,7 +113,7 @@ function Seed() {
         /*
          * At the top of the stem are the wispy parts that stick out of the
          * top and catch the wind.  We draw a random number of wisps between
-         * four and ten.
+         * wispMin and wispMax.
          * 
          * Each wisp is an arc with a circle on top;
          */
@@ -166,7 +166,7 @@ function Seed() {
     }
 
     // this function extends the stem so the stems that were attached in
-    // the middle can appear to have a stem when they are 'blown' loose
+    // the middle have a stem when they are 'blown' loose
     this.extendStem = function(stemHeight) {
         var stem = this.group.children['stem'];
         var cur = stem.segments[1].point - stem.segments[0].point;
@@ -181,12 +181,12 @@ function Seed() {
     }
 
     // This function sets a seed to the detached state. The breeze blows
-    // the seed to a 0 degree angle on detachment. It will rotate
+    // the seed to a 0 degree angle on detachment.
     this.detach = function() {
         // rotate the seed to zero degrees (wisps on right, seed on left)
         this.rotate(-this.angle);
 
-        // TODO fix hardcoded stem length
+        // TODO fix hardcoded stem length?
         this.extendStem(25);
 
         // the seed is not settled (rotated to wisps on top and seed on
@@ -212,7 +212,7 @@ function Seed() {
     //
     // This function rotates the seed a certain amount around its
     // center point.  This is what makes the seeds move across the
-    // screen in an arcing patter so they look like they are floating.
+    // screen so they look like they are floating.
     //
     this.rotateMove = function(angle) {
         // do accurate off screen check. could use heuristics but
@@ -248,7 +248,6 @@ function Seed() {
 }
 
 
-var seedCount = 0;
 var started = false;
 
 var seeds = {attached: [], floating: [], offscreen: []};
